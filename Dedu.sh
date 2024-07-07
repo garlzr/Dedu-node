@@ -83,7 +83,8 @@ else
 fi
 
 read -p "请输入节点key: " SECRET
-dekube register {SECRET}
+dekube register ${SECRET}
+sleep 5
 dekube start
 
 
