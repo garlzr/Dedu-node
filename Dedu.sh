@@ -81,3 +81,9 @@ EOF
 else
     echo "Error: Download failed."
 fi
+
+read -p "请输入节点key: " SECRET
+dekube register {SECRET}
+dekube start
+
+
