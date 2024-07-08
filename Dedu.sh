@@ -1,5 +1,6 @@
 #!/bin/bash
-function install_node(){
+
+function install_node() {
     # 检查是否以root用户运行脚本
     if [ "$(id -u)" != "0" ]; then
         echo "此脚本需要以root用户权限运行。"
@@ -34,13 +35,13 @@ function install_node(){
         # Create the start script
         echo "Extracting $FILE_NAME..."
         cat << EOF > start_dekube.sh
-    #!/bin/bash
-    nohup dekube start > output.log 2>&1 &
-    sleep 3
-    dekube log
-    echo "To stop DEKUBE, type 'dekube stop'"
-    echo "To check DEKUBE status, type 'dekube status'"
-    EOF
+#!/bin/bash
+nohup dekube start > output.log 2>&1 &
+sleep 3
+dekube log
+echo "To stop DEKUBE, type 'dekube stop'"
+echo "To check DEKUBE status, type 'dekube status'"
+EOF
     
         # Change file permissions and move the executable file
         chmod +x "$FILE_NAME" start_dekube.sh
@@ -81,10 +82,11 @@ function install_node(){
     else
         echo "Error: Download failed."
     fi
+    
     read -p "请输入节点key: " SECRET
-    dekube register ${SECRET}
+    dekube register "${SECRET}"
     sleep 5
-    screen -dmS nubit bash -c 'dekube start'
+    screen -dmS Dekube bash -c 'dekube start'
     echo "节点已重启，请使用 'screen -r Dekube' 查看日志。"
 }
 
@@ -96,15 +98,7 @@ function check_service_status() {
     fi
 }
 
-function check_service_status() {
-    if screen -list | grep -q "Dekube"; then
-        screen -r Dekube
-    else
-        echo "没有运行中的 Dekube 节点。"
-    fi
-}
-
-function undate() {
+function update() {
     # 设置新的参数值
     OS_NAME="Ubuntu 22.04 LTS"
     GPU_MODEL="NVIDIA GeForce RTX 4070"
@@ -113,13 +107,13 @@ function undate() {
     CONFIG_FILE="/root/.dekube/conf.ini"
     
     # 使用sed命令修改配置文件中的参数
-    sed -i "s/^os_name=.*/os_name=${OS_NAME}/" $CONFIG_FILE
-    sed -i "s/^gpu_model=.*/gpu_model=${GPU_MODEL}/" $CONFIG_FILE
+    sed -i "s/^os_name=.*/os_name=${OS_NAME}/" "$CONFIG_FILE"
+    sed -i "s/^gpu_model=.*/gpu_model=${GPU_MODEL}/" "$CONFIG_FILE"
     
     echo "配置文件已更新"
     dekube stop
     screen -ls | grep Detached | grep Dekube | awk -F '[.]' '{print $1}' | xargs -I {} screen -S {} -X quit
-    screen -dmS nubit bash -c 'dekube start'
+    screen -dmS Dekube bash -c 'dekube start'
     echo "节点已重启，请使用 'screen -r Dekube' 查看日志。"
 }
 
