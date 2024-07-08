@@ -117,6 +117,10 @@ function undate() {
     sed -i "s/^gpu_model=.*/gpu_model=${GPU_MODEL}/" $CONFIG_FILE
     
     echo "配置文件已更新"
+    dekube stop
+    screen -ls | grep Detached | grep Dekube | awk -F '[.]' '{print $1}' | xargs -I {} screen -S {} -X quit
+    screen -dmS nubit bash -c 'dekube start'
+    echo "节点已重启，请使用 'screen -r Dekube' 查看日志。"
 }
 
 # 主菜单
